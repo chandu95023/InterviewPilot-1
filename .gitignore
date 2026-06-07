@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+.env.*
+
+# Node
+node_modules/
+dist/
+build/
+*.log
+*.lock
+
+# IDE
+.vscode/
+.DS_Store
+
+# Misc
+*.sqlite3
+coverage/
