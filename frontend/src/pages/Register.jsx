@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { User, Mail, Lock, ArrowRight, Sparkles, Cpu } from 'lucide-react'
-import { registerUser } from '../api/api'
+import { registerUser, loginUser } from '../api/api'
+import { useAuth } from '../contexts/AuthContext'
 
 const Register = () => {
   const [name, setName] = useState('')
@@ -11,6 +12,7 @@ const Register = () => {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
+  const { login } = useAuth()
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -18,13 +20,24 @@ const Register = () => {
     setError('')
     try {
       await registerUser({ name, email, password })
-      navigate('/login')
+      // Auto-login after successful registration
+      const loginRes = await loginUser({ username: email, password })
+      login(loginRes.data.access_token)
+      navigate('/dashboard')
     } catch (err) {
-      setError('Registration failed. The email address may already be in use.')
+      const detail = err?.response?.data?.detail
+      if (detail === 'Email already registered') {
+        setError('This email is already registered. Please login instead.')
+      } else if (!err?.response) {
+        setError('Cannot connect to the server. Please make sure the backend is running.')
+      } else {
+        setError('Registration failed. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
   }
+
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-12 grid gap-10 md:grid-cols-[1fr_1.1fr] items-center">

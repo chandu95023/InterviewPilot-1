@@ -1,0 +1,16 @@
+Testing APIs...
+[PASS] Login PASSED: 200
+[PASS] Profile PASSED: 200
+[PASS] Dashboard Stats PASSED: 200
+[PASS] Dashboard Company Perf PASSED: 200
+[PASS] Dashboard Progress PASSED: 200
+[PASS] Mock Interview Questions PASSED: 200
+[PASS] Study Plan Generate PASSED: 200
+[FAIL] Study Plan Latest FAILED: 500 - {"error":"Internal server error","status_code":500,"message":"(sqlite3.OperationalError) no such column: study_plans.daily_study_hours\n[SQL: SELECT study_plans.id AS study_plans_id, study_plans.user_id AS study_plans_user_id, study_plans.domain AS study_plans_domain, study_plans.current_level AS study_plans_current_level, study_plans.target_role AS study_plans_target_role, study_plans.weak_topics AS study_plans_weak_topics, study_plans.daily_study_hours AS study_plans_daily_study_hours, study_plans.target_company AS study_plans_target_company, study_plans.plan_data AS study_plans_plan_data, study_plans.created_at AS study_plans_created_at \nFROM study_plans \nWHERE study_plans.user_id = ? ORDER BY study_plans.created_at DESC\n LIMIT ? OFFSET ?]\n[parameters: ('demo-user-id', 1, 0)]\n(Background on this error at: https://sqlalche.me/e/20/e3q8)","path":"http://localhost:8000/api/study-plan/latest","timestamp":"2026-06-23T07:50:31.635164"}
+[FAIL] Career Guidance Generate FAILED: 422 - {"error":"Validation failed","status_code":422,"details":[{"field":"target_role","message":"field required","type":"value_error.missing"}],"path":"http://localhost:8000/api/career-guidance/generate","timestamp":"2026-06-23T07:50:33.650742"}
+[PASS] Career Guidance Latest PASSED: 200
+[PASS] Aptitude Start PASSED: 200
+[PASS] Coding Generate PASSED: 200
+[PASS] Question History PASSED: 200
+[PASS] Voice Interview Start PASSED: 200
+Tests complete.

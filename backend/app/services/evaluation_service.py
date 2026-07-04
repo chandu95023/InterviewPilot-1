@@ -18,11 +18,27 @@ def evaluate_interview_flow(questions: List[dict], answers: List[dict], domain: 
         })
     average_score = round(total_score / max(len(answers), 1), 2)
     weak_topics = []
+    strengths = set()
+    weaknesses = set()
+    suggestions = set()
+    
     for item in summary:
         if item["score"] < 7:
             weak_topics.append(item["question"])
+        eval_data = item["evaluation"]
+        if "strengths" in eval_data:
+            strengths.update(eval_data["strengths"])
+        if "weaknesses" in eval_data:
+            weaknesses.update(eval_data["weaknesses"])
+        if "suggestions" in eval_data:
+            suggestions.update(eval_data["suggestions"])
+
     return {
         "average_score": average_score,
+        "score": average_score,
         "summary": summary,
         "weak_topics": weak_topics,
+        "strengths": list(strengths)[:5],
+        "weaknesses": list(weaknesses)[:5],
+        "suggestions": list(suggestions)[:5],
     }

@@ -13,6 +13,7 @@ import {
   AlertCircle 
 } from 'lucide-react'
 import { generateCodingChallenge, evaluateCodingChallenge, getCodingChallengeHistory } from '../api/api'
+import AIContextChat from '../components/AIContextChat'
 import { Link } from 'react-router-dom'
 
 const CodingChallenge = () => {
@@ -316,6 +317,9 @@ const CodingChallenge = () => {
           )}
         </div>
       </div>
+
+      {/* Floating AI Coach */}
+      <AIContextChat context={{ page: 'Coding Challenge', domain, difficulty, language, currentQuestion: challenge?.problem || challenge?.title || '' }} />
     </div>
   )
 }

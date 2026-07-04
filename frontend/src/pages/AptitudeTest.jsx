@@ -13,6 +13,7 @@ import {
   BookOpen
 } from 'lucide-react'
 import { startAptitudeTest, submitAptitudeAnswers } from '../api/api'
+import AIContextChat from '../components/AIContextChat'
 import { Link } from 'react-router-dom'
 
 const CATEGORIES = [
@@ -376,6 +377,8 @@ const AptitudeTest = () => {
           </div>
         </motion.div>
       )}
+      {/* Floating AI Coach */}
+      <AIContextChat context={{ page: 'Aptitude Test', category, difficulty, currentQuestion: quizQuestions[currentIndex]?.question || '' }} />
     </div>
   )
 }

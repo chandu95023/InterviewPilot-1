@@ -14,6 +14,17 @@ class PyObjectId(ObjectId):
         return ObjectId(v)
 
 
+def get_db_id(id_str: str):
+    if not id_str:
+        return None
+    try:
+        if ObjectId.is_valid(id_str):
+            return ObjectId(id_str)
+    except Exception:
+        pass
+    return id_str
+
+
 def serialize_doc(doc: dict) -> dict:
     if not doc:
         return {}

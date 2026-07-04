@@ -35,7 +35,10 @@ def create_access_token(data: dict) -> str:
     return jwt.encode(to_encode, settings.jwt_secret, algorithm=settings.jwt_algorithm)
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+from .postgres_db import get_db, User
+from sqlalchemy.orm import Session
+
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -48,8 +51,21 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = await users_collection.find_one({"email": email})
-    if user is None:
-        raise credentials_exception
-    user["id"] = str(user["_id"])
-    return user
+    
+    if db:
+        user = db.query(User).filter(User.email == email).first()
+        if user is None:
+            raise credentials_exception
+        return {
+            "id": str(user.id),
+            "name": user.name,
+            "email": user.email,
+            "hashed_password": user.hashed_password,
+            "created_at": user.created_at
+        }
+    else:
+        user = await users_collection.find_one({"email": email})
+        if user is None:
+            raise credentials_exception
+        user["id"] = str(user["_id"])
+        return user

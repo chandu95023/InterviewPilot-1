@@ -16,6 +16,7 @@ import {
   CheckSquare
 } from 'lucide-react'
 import { evaluateInterview, generateQuestions } from '../api/api'
+import AIContextChat from '../components/AIContextChat'
 import { Link } from 'react-router-dom'
 
 const HRInterview = () => {
@@ -482,6 +483,8 @@ const HRInterview = () => {
           </div>
         </motion.div>
       )}
+      {/* Floating AI Coach */}
+      <AIContextChat context={{ page: 'HR Interview', domain: 'HR & Behavioral', difficulty, currentQuestion: questions[currentIndex]?.question || '' }} />
     </div>
   )
 }

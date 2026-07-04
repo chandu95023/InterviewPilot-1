@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 
 const CompanyPrep = () => {
+  console.log('CompanyPrep Loaded')
   const [companies, setCompanies] = useState([])
   const [company, setCompany] = useState('Google')
   const [domain, setDomain] = useState('Full Stack Development')
@@ -27,13 +28,17 @@ const CompanyPrep = () => {
   useEffect(() => {
     getCompanies()
       .then((res) => {
-        const list = res.data.companies || ['Google', 'Amazon', 'Microsoft', 'Stripe', 'Netflix']
-        setCompanies(list)
-        if (list.length) setCompany(list[0])
+        const list = res.data.companies || [];
+        // Ensure list of objects with name property
+        const normalized = list.map((c) => typeof c === 'string' ? { name: c, emoji: '' } : c);
+        setCompanies(normalized);
+        if (normalized.length) setCompany(normalized[0].name);
       })
       .catch(() => {
-        setCompanies(['Google', 'Amazon', 'Microsoft', 'Stripe', 'Netflix'])
-      })
+        const fallback = ['Google', 'Amazon', 'Microsoft', 'Stripe', 'Netflix'];
+        const normalized = fallback.map((c) => ({ name: c, emoji: '' }));
+        setCompanies(normalized);
+      });
   }, [])
 
   const handleGenerate = async () => {
@@ -77,7 +82,15 @@ const CompanyPrep = () => {
               value={company} 
               onChange={(e) => setCompany(e.target.value)}
             >
-              {companies.map((name) => <option key={name} value={name}>{name}</option>)}
+              {companies.length === 0 ? (
+                <option disabled>Loading companies...</option>
+              ) : (
+                companies.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.emoji ? `${c.emoji} ${c.name}` : c.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
 

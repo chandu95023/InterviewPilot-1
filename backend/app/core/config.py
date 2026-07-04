@@ -2,25 +2,31 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load .env if present (optional)
-load_dotenv(Path(__file__).resolve().parents[3] / '.env')
+# Try loading backend/.env first, then root/.env
+backend_env = Path(__file__).resolve().parents[2] / '.env'
+root_env = Path(__file__).resolve().parents[3] / '.env'
+
+if backend_env.exists():
+    load_dotenv(backend_env)
+else:
+    load_dotenv(root_env)
 
 from pydantic import BaseSettings, Field
 
 class Settings(BaseSettings):
-    mongodb_uri: str = Field('mongodb://localhost:27017', env='MONGODB_URI')
-    mongodb_db: str = Field('ai_interview_prep', env='MONGODB_DB')
-    jwt_secret: str = Field('dev_secret', env='JWT_SECRET')
-    jwt_algorithm: str = Field('HS256', env='JWT_ALGORITHM')
-    jwt_expiration_minutes: int = Field(120, env='JWT_EXPIRATION_MINUTES')
-    openai_api_key: str = Field('', env='OPENAI_API_KEY')
-    openai_model: str = Field('gpt-4o', env='OPENAI_MODEL')
+    mongodb_uri: str = Field('mongodb://localhost:27017')
+    mongodb_db: str = Field('ai_interview_prep')
+    jwt_secret: str = Field('dev_secret')
+    jwt_algorithm: str = Field('HS256')
+    jwt_expiration_minutes: int = Field(120)
+    openai_api_key: str = Field('')
+    openai_model: str = Field('gpt-4o')
+    gemini_api_key: str = Field('')
 
-    # Model config for Pydantic v2
-    model_config = {
-        "env_file": str(Path(__file__).resolve().parents[3] / '.env'),
-        "extra": "ignore",
-    }
-
+    class Config:
+        env_file = str(backend_env) if backend_env.exists() else str(root_env)
+        env_file_encoding = 'utf-8'
+        extra = "ignore"
 
 settings = Settings()
+

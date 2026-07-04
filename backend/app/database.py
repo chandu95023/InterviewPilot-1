@@ -140,15 +140,19 @@ class AsyncInMemoryCollection:
 		return AsyncInMemoryCursor(items)
 
 	async def distinct(self, field: str, filter: Dict[str, Any] = None):
-		items = await self.find({}) if filter is None else await self.find_one(filter)
-		# if items is single doc, handle
-		if isinstance(items, dict):
-			return list({items.get(field)})
-		# items may be AsyncInMemoryCursor; convert
-		if isinstance(items, AsyncInMemoryCursor):
-			lst = await items.to_list(None)
+		# filter all docs by the given filter, then return distinct values of field
+		if filter is None:
+			lst = list(self._docs)
 		else:
-			lst = list(items)
+			lst = []
+			for d in self._docs:
+				match = True
+				for k, v in filter.items():
+					if d.get(k) != v:
+						match = False
+						break
+				if match:
+					lst.append(d)
 		return list({d.get(field) for d in lst if field in d})
 
 
@@ -161,3 +165,5 @@ resume_collection = AsyncInMemoryCollection()
 coding_challenges_collection = AsyncInMemoryCollection()
 scores_collection = AsyncInMemoryCollection()
 feedback_collection = AsyncInMemoryCollection()
+assistant_collection = AsyncInMemoryCollection()
+

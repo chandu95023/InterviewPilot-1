@@ -100,12 +100,15 @@ class StudyPlanRequest(BaseModel):
     current_level: str
     target_role: Optional[str] = None
     weak_topics: Optional[List[str]] = []
+    daily_study_hours: Optional[int] = 2
+    target_company: Optional[str] = None
+    plan_duration: Optional[str] = "8"  # "8", "12", or "24"
 
 
 class StudyPlanResponse(BaseModel):
     headline: str
-    weekly_plan: List[str]
-    learning_resources: List[str]
+    weekly_plan: list
+    learning_resources: dict
 
 
 class CodingChallengeCreate(BaseModel):

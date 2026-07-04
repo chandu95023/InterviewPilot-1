@@ -5,7 +5,7 @@ from ..auth import get_current_user
 from ..schemas import CodingChallengeCreate, CodingEvaluationRequest
 from ..database import coding_challenges_collection
 from ..services.ai_service import generate_coding_challenge, evaluate_coding_solution
-from ..utils import serialize_doc
+from ..utils import serialize_doc, get_db_id
 
 router = APIRouter()
 
@@ -33,7 +33,7 @@ async def generate_coding_challenges(payload: CodingChallengeCreate, current_use
 @router.post("/evaluate")
 async def evaluate_coding_challenge(payload: CodingEvaluationRequest, current_user: dict = Depends(get_current_user)):
     try:
-        challenge = await coding_challenges_collection.find_one({"_id": ObjectId(payload.challenge_id), "user_id": current_user["id"]})
+        challenge = await coding_challenges_collection.find_one({"_id": get_db_id(payload.challenge_id), "user_id": current_user["id"]})
     except Exception:
         challenge = None
     if not challenge:

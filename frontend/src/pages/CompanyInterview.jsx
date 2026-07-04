@@ -51,12 +51,16 @@ const CompanyInterview = () => {
   useEffect(() => {
     getCompanies()
       .then((res) => {
-        const list = res.data.companies || ['Google', 'Amazon', 'Microsoft', 'Meta', 'Tesla', 'Apple', 'Oracle']
-        setCompanies(list)
-        if (list.length) setSelectedCompany(list[0])
+        const list = res.data.companies || []
+        const normalized = list.map((c) => typeof c === 'string' ? { name: c, emoji: '' } : c)
+        setCompanies(normalized)
+        if (normalized.length) setSelectedCompany(normalized[0].name)
       })
       .catch(() => {
-        setCompanies(['Google', 'Amazon', 'Microsoft', 'Meta', 'Tesla', 'Apple', 'Oracle'])
+        const fallback = ['Google', 'Amazon', 'Microsoft', 'Meta', 'Tesla', 'Apple', 'Oracle']
+        const normalized = fallback.map((c) => ({ name: c, emoji: '' }))
+        setCompanies(normalized)
+        setSelectedCompany(normalized[0].name)
       })
     return () => {
       stopTimer()
@@ -239,7 +243,11 @@ const CompanyInterview = () => {
                 value={selectedCompany} 
                 onChange={(e) => setSelectedCompany(e.target.value)}
               >
-                {companies.map((name) => <option key={name} value={name}>{name}</option>)}
+                {companies.map((c) => (
+                  <option key={c.name} value={c.name}>
+                    {c.emoji ? `${c.emoji} ${c.name}` : c.name}
+                  </option>
+                ))}
               </select>
             </div>
             

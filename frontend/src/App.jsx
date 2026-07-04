@@ -4,6 +4,7 @@ import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
 import Dashboard from './pages/Dashboard'
 import MockInterview from './pages/MockInterview'
 import ResumeUpload from './pages/ResumeUpload'
@@ -22,6 +23,7 @@ import AptitudeTest from './pages/AptitudeTest'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import AdminDashboard from './pages/AdminDashboard'
+import AIAssistant from './pages/AIAssistant'
 import ProtectedRoute from './components/ProtectedRoute'
 import { Bell } from 'lucide-react'
 
@@ -47,7 +49,8 @@ function AppContent() {
     '/company-interview',
     '/admin',
     '/company-performance',
-    '/question-history'
+    '/question-history',
+    '/ai-assistant'
   ].some(path => location.pathname.startsWith(path))
 
   const activePageLabel = location.pathname.split('/')[1]?.replace('-', ' ') || 'Workspace'
@@ -99,6 +102,7 @@ function AppContent() {
               <Route path="/company-performance" element={<ProtectedRoute><CompanyPerformance /></ProtectedRoute>} />
               <Route path="/question-history" element={<ProtectedRoute><QuestionHistory /></ProtectedRoute>} />
               <Route path="/report" element={<ProtectedRoute><InterviewReport /></ProtectedRoute>} />
+              <Route path="/ai-assistant" element={<ProtectedRoute><AIAssistant /></ProtectedRoute>} />
               <Route path="*" element={<Navigate to="/dashboard" />} />
             </Routes>
           </main>
@@ -116,6 +120,7 @@ function AppContent() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
