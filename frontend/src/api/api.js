@@ -92,5 +92,5 @@ export const getHealthStatus = () => api.get('/health')
 export const askAssistant = (payload) => api.post('/assistant/chat', payload)
 export const getAssistantHistory = () => api.get('/assistant/history')
 
-export default api
 
+export default api

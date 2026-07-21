@@ -51,7 +51,7 @@ const historyLinks = [
 ]
 
 const bottomLinks = [
-// Admin Console removed
+  { label: 'Admin Console', path: '/admin', icon: Shield },
   { label: 'Profile', path: '/profile', icon: User },
   { label: 'Settings', path: '/settings', icon: SettingsIcon },
 ]

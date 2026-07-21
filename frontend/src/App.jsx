@@ -22,7 +22,7 @@ import CareerGuidance from './pages/CareerGuidance'
 import AptitudeTest from './pages/AptitudeTest'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
-import AdminDashboard from './pages/AdminDashboard'
+// AdminDashboard import removed
 import AIAssistant from './pages/AIAssistant'
 import ProtectedRoute from './components/ProtectedRoute'
 import { Bell } from 'lucide-react'
@@ -47,7 +47,7 @@ function AppContent() {
     '/career-guidance',
     '/hr-interview',
     '/company-interview',
-    '/admin',
+
     '/company-performance',
     '/question-history',
     '/ai-assistant'
@@ -96,7 +96,7 @@ function AppContent() {
               <Route path="/career-guidance" element={<ProtectedRoute><CareerGuidance /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-              <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+
               <Route path="/company-prep" element={<ProtectedRoute><CompanyPrep /></ProtectedRoute>} />
               <Route path="/study-plan" element={<ProtectedRoute><StudyPlan /></ProtectedRoute>} />
               <Route path="/company-performance" element={<ProtectedRoute><CompanyPerformance /></ProtectedRoute>} />

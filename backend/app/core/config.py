@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     jwt_secret: str = Field('dev_secret')
     jwt_algorithm: str = Field('HS256')
     jwt_expiration_minutes: int = Field(120)
+    # Admin JWT configuration
+    admin_jwt_secret: str = Field('admin_dev_secret')
+    admin_jwt_algorithm: str = Field('HS256')
+    admin_access_token_minutes: int = Field(60)
+    admin_refresh_token_days: int = Field(7)
     openai_api_key: str = Field('')
     openai_model: str = Field('gpt-4o')
     gemini_api_key: str = Field('')

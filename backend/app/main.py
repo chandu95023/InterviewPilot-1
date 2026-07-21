@@ -1,7 +1,7 @@
 from datetime import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import auth, questions, interviews, resume, dashboard, study_plan, challenges, voice_interview, company, company_prep, coding, aptitude, analytics, career_guidance, assistant
+from .routes import auth, questions, interviews, resume, dashboard, study_plan, challenges, voice_interview, company, company_prep, coding, aptitude, analytics, career_guidance, assistant, admin
 from .exceptions import api_exception_handler, validation_exception_handler, generic_exception_handler, APIException
 from .logging_config import get_logger
 from fastapi.exceptions import RequestValidationError
@@ -51,6 +51,8 @@ app.include_router(aptitude.router, prefix="/api/aptitude", tags=["Aptitude"])
 app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(career_guidance.router, prefix="/api/career-guidance", tags=["Career Guidance"])
 app.include_router(assistant.router, prefix="/api/assistant", tags=["AI Assistant"])
+from .routes import admin_auth
+app.include_router(admin_auth.router, prefix="/api/admin", tags=["Admin Auth"])
 
 
 from . import postgres_db

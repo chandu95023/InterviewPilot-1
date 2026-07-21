@@ -11,11 +11,11 @@ results.append({'module':'Health','endpoint':'GET /api/health','status':resp.sta
 resp = requests.get(f'{base}/docs')
 results.append({'module':'Docs','endpoint':'GET /docs','status':resp.status_code,'response':resp.text[:200]})
 # 4. Register
-reg = {'name':'E2E User','email':'e2e_user@example.com','password':'Pass123'}
+reg = {'name':'E2E User','email':'e2e_user@gmail.com','password':'Pass123'}
 resp = requests.post(f'{base}/api/auth/register', json=reg)
 results.append({'module':'Register','endpoint':'POST /api/auth/register','status':resp.status_code,'response':resp.text})
 # 5. Login
-login = {'username':'e2e_user@example.com','password':'Pass123'}
+login = {'username':'e2e_user@gmail.com','password':'Pass123'}
 resp = requests.post(f'{base}/api/auth/login', data=login)
 login_status = resp.status_code
 token = resp.json().get('access_token') if login_status==200 else None
