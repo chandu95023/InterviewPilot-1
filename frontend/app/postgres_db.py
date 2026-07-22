@@ -1,38 +1,26 @@
 import os
-import logging
-from datetime import datetime
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Float, JSON, text
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Float, JSON
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from datetime import datetime
+import logging
 
 logger = logging.getLogger(__name__)
 
-# Determine database file path for SQLite fallback
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SQLITE_DB_PATH = os.path.join(BASE_DIR, "interview_prep.db")
-SQLITE_URL = f"sqlite:///{SQLITE_DB_PATH}"
+# Support both POSTGRESQL_URI and DATABASE_URL env vars, with sqlite fallback
+sqlite_path = "/tmp/interview_prep.db" if os.getenv("VERCEL") else "./interview_prep.db"
+DATABASE_URL = os.getenv("DATABASE_URL") or os.getenv("POSTGRESQL_URI", f"sqlite:///{sqlite_path}")
 
-# Check for explicit DATABASE_URL or POSTGRESQL_URI
-raw_url = os.getenv("DATABASE_URL") or os.getenv("POSTGRESQL_URI")
-
-def _get_working_engine_and_session():
-    if raw_url and "sqlite" not in raw_url:
-        try:
-            test_engine = create_engine(raw_url, connect_args={"connect_timeout": 3})
-            with test_engine.connect() as conn:
-                conn.execute(text("SELECT 1"))
-            logger.info("Successfully connected to primary PostgreSQL database.")
-            return test_engine, sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
-        except Exception as e:
-            logger.warning(f"Primary database ({raw_url}) connection failed: {e}. Falling back to local SQLite database...")
-    
-    # Fallback to local SQLite DB
-    sqlite_engine = create_engine(SQLITE_URL, connect_args={"check_same_thread": False})
-    logger.info(f"Using SQLite database at {SQLITE_DB_PATH}")
-    return sqlite_engine, sessionmaker(autocommit=False, autoflush=False, bind=sqlite_engine)
-
-engine, SessionLocal = _get_working_engine_and_session()
-Base = declarative_base()
+try:
+    connect_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+    engine = create_engine(DATABASE_URL, connect_args=connect_args)
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    Base = declarative_base()
+except Exception as e:
+    logger.error(f"Error connecting to relational database: {e}")
+    engine = None
+    SessionLocal = None
+    Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
@@ -210,12 +198,28 @@ class AssistantChat(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 def init_db():
+    global engine, SessionLocal
+    from sqlalchemy import text
     if engine:
         try:
             Base.metadata.create_all(bind=engine)
-            logger.info("Database tables initialized successfully.")
+            db = SessionLocal()
+            db.execute(text("SELECT 1"))
+            db.close()
+            logger.info("Successfully connected to primary relational database.")
         except Exception as e:
-            logger.error(f"Error creating database tables: {e}")
+            logger.warning(f"Primary database connection failed: {e}. Falling back to local SQLite database...")
+            try:
+                sqlite_path = "/tmp/interview_prep.db" if os.getenv("VERCEL") else "./interview_prep.db"
+                engine = create_engine(f"sqlite:///{sqlite_path}", connect_args={"check_same_thread": False})
+                SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+                Base.metadata.create_all(bind=engine)
+                logger.info("Successfully initialized SQLite fallback database.")
+            except Exception as e2:
+                logger.error(f"Failed to initialize SQLite fallback: {e2}")
+                engine = None
+                SessionLocal = None
+                return
         
         if SessionLocal:
             from .seed import seed_database
@@ -229,7 +233,8 @@ def init_db():
 
 def get_db():
     if SessionLocal is None:
-        raise Exception("Database session factory is not initialized")
+        yield None
+        return
     db = SessionLocal()
     try:
         yield db

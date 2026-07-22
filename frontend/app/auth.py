@@ -38,8 +38,6 @@ def create_access_token(data: dict) -> str:
 from .postgres_db import get_db, User
 from sqlalchemy.orm import Session
 
-from sqlalchemy import func
-
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -51,17 +49,23 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception
-        clean_email = email.strip().lower()
     except JWTError:
         raise credentials_exception
     
-    user = db.query(User).filter(func.lower(User.email) == clean_email).first()
-    if user is None:
-        raise credentials_exception
-    return {
-        "id": str(user.id),
-        "name": user.name,
-        "email": user.email,
-        "hashed_password": user.hashed_password,
-        "created_at": user.created_at
-    }
+    if db:
+        user = db.query(User).filter(User.email == email).first()
+        if user is None:
+            raise credentials_exception
+        return {
+            "id": str(user.id),
+            "name": user.name,
+            "email": user.email,
+            "hashed_password": user.hashed_password,
+            "created_at": user.created_at
+        }
+    else:
+        user = await users_collection.find_one({"email": email})
+        if user is None:
+            raise credentials_exception
+        user["id"] = str(user["_id"])
+        return user

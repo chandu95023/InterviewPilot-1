@@ -10,19 +10,19 @@ class Token(BaseModel):
 
 class UserCreate(BaseModel):
     name: str
-    email: str
+    email: EmailStr
     password: str
 
 
 class UserLogin(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 
 class UserProfile(BaseModel):
     id: Optional[str]
     name: str
-    email: str
+    email: EmailStr
     created_at: Optional[datetime]
 
     class Config:

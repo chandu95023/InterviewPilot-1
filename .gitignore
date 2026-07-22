@@ -2,22 +2,49 @@
 __pycache__/
 *.py[cod]
 *.pyo
-.venv/
+*.egg-info/
+dist/
+build/
+*.egg
+logs/
+dist/
+build/
+*.egg
+
+# Virtual environments
+.venv*/
 venv/
+env/
+
+# Environment files (contain secrets)
 .env
 .env.*
+!.env.example
+
+# Database files
+*.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
 
 # Node
 node_modules/
-dist/
-build/
-*.log
-*.lock
+npm-debug.log*
 
-# IDE
-.vscode/
-.DS_Store
+# Vercel
+.vercel/
 
-# Misc
-*.sqlite3
-coverage/
+# Cloudflare tunnel binary
+cloudflared.exe
+
+# Test scripts (dev only)
+backend/test_*.py
+backend/audit_*.py
+backend/verify_*.py

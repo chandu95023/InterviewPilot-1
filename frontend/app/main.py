@@ -20,7 +20,7 @@ origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:5176", "http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -55,37 +55,38 @@ from .postgres_db import init_db
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize DB and seed default user accounts."""
+    """Initialize DB and seed a demo user."""
     init_db()
     
-    default_users = [
-        {"id": "demo-user-id", "name": "Demo User", "email": "demo@interviewpilot.ai", "password": "demo1234"},
-        {"id": "admin-user-id", "name": "Admin User", "email": "admin@interviewprep.ai", "password": "Admin@123"},
-    ]
-
-    if postgres_db.SessionLocal:
-        db = postgres_db.SessionLocal()
-        try:
-            for u_info in default_users:
-                clean_email = u_info["email"].strip().lower()
-                pg_user = db.query(postgres_db.User).filter(postgres_db.User.email == clean_email).first()
-                if not pg_user:
-                    new_u = postgres_db.User(
-                        id=u_info["id"],
-                        name=u_info["name"],
-                        email=clean_email,
-                        hashed_password=get_password_hash(u_info["password"]),
-                        created_at=datetime.utcnow()
-                    )
-                    db.add(new_u)
-                    logger.info(f"Seeded account in DB: {clean_email}")
+    # Seed in PostgreSQL
+    db = postgres_db.SessionLocal()
+    try:
+        pg_user = db.query(postgres_db.User).filter(postgres_db.User.email == "demo@interviewpilot.ai").first()
+        if not pg_user:
+            demo_user = postgres_db.User(
+                id="demo-user-id",
+                name="Demo User",
+                email="demo@interviewpilot.ai",
+                hashed_password=get_password_hash("demo1234"),
+                created_at=datetime.utcnow()
+            )
+            db.add(demo_user)
             db.commit()
-        except Exception as e:
-            logger.error(f"Error seeding accounts in relational DB: {e}")
-        finally:
-            db.close()
+            logger.info("Demo user seeded in PostgreSQL/SQLite.")
+    except Exception as e:
+        logger.error(f"Error seeding demo user in relational DB: {e}")
+    finally:
+        db.close()
 
-    pass
+    existing = await users_collection.find_one({"email": "demo@interviewpilot.ai"})
+    if not existing:
+        await users_collection.insert_one({
+            "name": "Demo User",
+            "email": "demo@interviewpilot.ai",
+            "hashed_password": get_password_hash("demo1234"),
+            "_id": "demo-user-id"
+        })
+        logger.info("Demo user seeded in fallback users_collection: demo@interviewpilot.ai / demo1234")
 
 from .services.ai_service import GEMINI_AVAILABLE, call_gemini
 import sqlalchemy
