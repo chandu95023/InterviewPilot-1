@@ -1,6 +1,6 @@
 fastapi==0.68.2
 uvicorn==0.20.0
-pydantic[email]==1.10.11
+pydantic[email]==1.10.15
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 motor==2.5.1
